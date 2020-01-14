@@ -4,10 +4,10 @@ const app = new App({
 	target: document.body,
 	props: {
 		title: 'partnerpixel',
-		campaign1: 'http://phiamplifytester.com/campaign1',
-		campaign2: 'http://phiamplifytester.com/campaign2',
-		campaign3: 'http://phiamplifytester.com/campaign3',
-		campaign4: 'http://phiamplifytester.com/campaign4'
+		campaign1: 'http://amplifytester.com/campaign1',
+		campaign2: 'http://amplifytester.com/campaign2',
+		campaign3: 'http://amplifytester.com/campaign3',
+		campaign4: 'http://amplifytester.com/campaign4'
 	}
 });
 
