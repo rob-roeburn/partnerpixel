@@ -1,18 +1,42 @@
 <script>
+
+  import {onMount} from 'svelte';
+
 	export let title;
-	export let campaign1;
-	export let campaign2;
-	export let campaign3;
-	export let campaign4;
+	export let postTarget;
+
+	function handleClick(req) {
+		let postdata=[];
+		postdata["Campaign"]=req.srcElement.classList[0];
+		let queryString = req.path[5].location.href.split('?');
+		let qsElements = queryString[1].split('&');
+		for (let i = 0; i < qsElements.length; i++) {
+			let pair = qsElements[i].split('=');
+			postdata[decodeURIComponent(pair[0])]=decodeURIComponent(pair[1]);
+		}
+		console.log(postdata);
+		let xhr = new XMLHttpRequest();
+    xhr.open("POST", postTarget, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({
+        payload: postdata
+    }));
+	}
+
+	onMount(function (req) {
+		console.log("I am the payload");
+		console.log(req)
+	});
+
 </script>
 
 <main>
 	<h1>{title}</h1>
 	<div class='outer'>
-		<a href="{campaign1}"><div class='campaign1' id='float'></div></a>
-		<a href="{campaign2}"><div class='campaign2' id='float'></div></a>
-		<a href="{campaign3}"><div class='campaign3' id='float'></div></a>
-		<a href="{campaign4}"><div class='campaign4' id='float'></div></a>
+		<div class='campaign1' id='float' on:click={handleClick}></div>
+		<div class='campaign2' id='float' on:click={handleClick}></div>
+		<div class='campaign3' id='float' on:click={handleClick}></div>
+		<div class='campaign4' id='float' on:click={handleClick}></div>
 	</div>
 </main>
 
