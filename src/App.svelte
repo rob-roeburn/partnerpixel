@@ -3,30 +3,32 @@
   import {onMount} from 'svelte';
 
 	export let title;
-	export let postTarget;
+	export let rbrnTarget;
+	export let hanpTarget;
 
 	function handleClick(req) {
-		let postdata=[];
-		postdata["Campaign"]=req.srcElement.classList[0];
+		let postdata={};
+		postdata.Campaign=req.srcElement.classList[0];
 		let queryString = req.path[5].location.href.split('?');
 		let qsElements = queryString[1].split('&');
 		for (let i = 0; i < qsElements.length; i++) {
 			let pair = qsElements[i].split('=');
 			postdata[decodeURIComponent(pair[0])]=decodeURIComponent(pair[1]);
 		}
-		console.log(postdata);
+		console.log(postdata)
 		let xhr = new XMLHttpRequest();
-    xhr.open("POST", postTarget, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
+		xhr.open("POST", rbrnTarget+'/processData', true);
+		//xhr.setRequestHeader(
+		//	'Access-Control-Allow-Origin', '*',
+		//	'Access-Control-Allow-Methods', '*',
+		//	'Access-Control-Allow-Credentials', 'true',
+		//	'Access-Control-Allow-Headers', 'Content-Type, Authorization',
+		//	'Content-Type', 'application/json',
+		//);
     xhr.send(JSON.stringify({
-        payload: postdata
-    }));
+			payload: postdata
+		}));
 	}
-
-	onMount(function (req) {
-		console.log("I am the payload");
-		console.log(req)
-	});
 
 </script>
 
