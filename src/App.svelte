@@ -39,20 +39,19 @@
 	}
 
   function pageLoaded() {
-    console.log("Loaded")
-    console.log()
+    console.log(window.navigator)
     let postdata={};
-		// The code below shows how to retrieve from the query string
-		let queryString = window.location.href.split('?');
-		let qsElements = queryString[1].split('&');
-		for (let i = 0; i < qsElements.length; i++) {
-			let pair = qsElements[i].split('=');
-			postdata[decodeURIComponent(pair[0])]=decodeURIComponent(pair[1]);
-		}
-
-		// Print results to console ahead of XHR
-		console.log(postdata)
-
+    try {
+		// The code will tokenize the query string
+		  let queryString = window.location.href.split('?');
+		  let qsElements = queryString[1].split('&');
+		  for (let i = 0; i < qsElements.length; i++) {
+			  let pair = qsElements[i].split('=');
+			  postdata[decodeURIComponent(pair[0])]=decodeURIComponent(pair[1]);
+		  }
+    } catch (e) {
+      console.log("Parse failed "+e);
+    }
 		// Create XHR and open with API URL
 		let xhr = new XMLHttpRequest();
 		xhr.open("POST", rbrnTarget+'/processData', true);

@@ -335,23 +335,23 @@ var app = (function () {
     			t4 = space();
     			div3 = element("div");
     			attr_dev(h1, "class", "svelte-1j2amf2");
-    			add_location(h1, file, 74, 1, 2040);
+    			add_location(h1, file, 73, 1, 2026);
     			attr_dev(div0, "class", "campaign1 svelte-1j2amf2");
     			attr_dev(div0, "id", "float");
-    			add_location(div0, file, 76, 2, 2080);
+    			add_location(div0, file, 75, 2, 2066);
     			attr_dev(div1, "class", "campaign2 svelte-1j2amf2");
     			attr_dev(div1, "id", "float");
-    			add_location(div1, file, 77, 2, 2146);
+    			add_location(div1, file, 76, 2, 2132);
     			attr_dev(div2, "class", "campaign3 svelte-1j2amf2");
     			attr_dev(div2, "id", "float");
-    			add_location(div2, file, 78, 2, 2212);
+    			add_location(div2, file, 77, 2, 2198);
     			attr_dev(div3, "class", "campaign4 svelte-1j2amf2");
     			attr_dev(div3, "id", "float");
-    			add_location(div3, file, 79, 2, 2278);
+    			add_location(div3, file, 78, 2, 2264);
     			attr_dev(div4, "class", "outer svelte-1j2amf2");
-    			add_location(div4, file, 75, 1, 2058);
+    			add_location(div4, file, 74, 1, 2044);
     			attr_dev(main, "class", "svelte-1j2amf2");
-    			add_location(main, file, 73, 0, 2032);
+    			add_location(main, file, 72, 0, 2018);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -421,18 +421,21 @@ var app = (function () {
     	}
 
     	function pageLoaded() {
-    		console.log("Loaded");
-    		console.log();
+    		console.log(window.navigator);
     		let postdata = {};
-    		let queryString = window.location.href.split("?");
-    		let qsElements = queryString[1].split("&");
 
-    		for (let i = 0; i < qsElements.length; i++) {
-    			let pair = qsElements[i].split("=");
-    			postdata[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+    		try {
+    			let queryString = window.location.href.split("?");
+    			let qsElements = queryString[1].split("&");
+
+    			for (let i = 0; i < qsElements.length; i++) {
+    				let pair = qsElements[i].split("=");
+    				postdata[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+    			}
+    		} catch(e) {
+    			console.log("Parse failed " + e);
     		}
 
-    		console.log(postdata);
     		let xhr = new XMLHttpRequest();
     		xhr.open("POST", rbrnTarget + "/processData", true);
     		xhr.send(JSON.stringify({ payload: postdata }));
