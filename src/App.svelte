@@ -40,6 +40,7 @@
 
   function pageLoaded() {
     console.log(window.navigator)
+    console.log(window.location)
     let postdata={};
     try {
 		// The code will tokenize the query string
