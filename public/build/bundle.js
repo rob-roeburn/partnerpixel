@@ -335,23 +335,23 @@ var app = (function () {
     			t4 = space();
     			div3 = element("div");
     			attr_dev(h1, "class", "svelte-1j2amf2");
-    			add_location(h1, file, 45, 1, 1244);
+    			add_location(h1, file, 74, 1, 2040);
     			attr_dev(div0, "class", "campaign1 svelte-1j2amf2");
     			attr_dev(div0, "id", "float");
-    			add_location(div0, file, 47, 2, 1284);
+    			add_location(div0, file, 76, 2, 2080);
     			attr_dev(div1, "class", "campaign2 svelte-1j2amf2");
     			attr_dev(div1, "id", "float");
-    			add_location(div1, file, 48, 2, 1350);
+    			add_location(div1, file, 77, 2, 2146);
     			attr_dev(div2, "class", "campaign3 svelte-1j2amf2");
     			attr_dev(div2, "id", "float");
-    			add_location(div2, file, 49, 2, 1416);
+    			add_location(div2, file, 78, 2, 2212);
     			attr_dev(div3, "class", "campaign4 svelte-1j2amf2");
     			attr_dev(div3, "id", "float");
-    			add_location(div3, file, 50, 2, 1482);
+    			add_location(div3, file, 79, 2, 2278);
     			attr_dev(div4, "class", "outer svelte-1j2amf2");
-    			add_location(div4, file, 46, 1, 1262);
+    			add_location(div4, file, 75, 1, 2058);
     			attr_dev(main, "class", "svelte-1j2amf2");
-    			add_location(main, file, 44, 0, 1236);
+    			add_location(main, file, 73, 0, 2032);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -402,7 +402,6 @@ var app = (function () {
     function instance($$self, $$props, $$invalidate) {
     	let { title } = $$props;
     	let { rbrnTarget } = $$props;
-    	let { hanpTarget } = $$props;
 
     	function handleClick(req) {
     		let postdata = {};
@@ -421,7 +420,35 @@ var app = (function () {
     		xhr.send(JSON.stringify({ payload: postdata }));
     	}
 
-    	const writable_props = ["title", "rbrnTarget", "hanpTarget"];
+    	function pageLoaded() {
+    		console.log("Loaded");
+    		console.log();
+    		let postdata = {};
+    		let queryString = window.location.href.split("?");
+    		let qsElements = queryString[1].split("&");
+
+    		for (let i = 0; i < qsElements.length; i++) {
+    			let pair = qsElements[i].split("=");
+    			postdata[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+    		}
+
+    		console.log(postdata);
+    		let xhr = new XMLHttpRequest();
+    		xhr.open("POST", rbrnTarget + "/processData", true);
+    		xhr.send(JSON.stringify({ payload: postdata }));
+    	}
+
+    	window.onload = pageLoaded();
+
+    	document.addEventListener(
+    		"DOMContentLoaded",
+    		function () {
+    			
+    		},
+    		false
+    	);
+
+    	const writable_props = ["title", "rbrnTarget"];
 
     	Object.keys($$props).forEach(key => {
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1.warn(`<App> was created with unknown prop '${key}'`);
@@ -430,26 +457,24 @@ var app = (function () {
     	$$self.$set = $$props => {
     		if ("title" in $$props) $$invalidate(0, title = $$props.title);
     		if ("rbrnTarget" in $$props) $$invalidate(2, rbrnTarget = $$props.rbrnTarget);
-    		if ("hanpTarget" in $$props) $$invalidate(3, hanpTarget = $$props.hanpTarget);
     	};
 
     	$$self.$capture_state = () => {
-    		return { title, rbrnTarget, hanpTarget };
+    		return { title, rbrnTarget };
     	};
 
     	$$self.$inject_state = $$props => {
     		if ("title" in $$props) $$invalidate(0, title = $$props.title);
     		if ("rbrnTarget" in $$props) $$invalidate(2, rbrnTarget = $$props.rbrnTarget);
-    		if ("hanpTarget" in $$props) $$invalidate(3, hanpTarget = $$props.hanpTarget);
     	};
 
-    	return [title, handleClick, rbrnTarget, hanpTarget];
+    	return [title, handleClick, rbrnTarget];
     }
 
     class App extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance, create_fragment, safe_not_equal, { title: 0, rbrnTarget: 2, hanpTarget: 3 });
+    		init(this, options, instance, create_fragment, safe_not_equal, { title: 0, rbrnTarget: 2 });
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
@@ -468,10 +493,6 @@ var app = (function () {
     		if (/*rbrnTarget*/ ctx[2] === undefined && !("rbrnTarget" in props)) {
     			console_1.warn("<App> was created without expected prop 'rbrnTarget'");
     		}
-
-    		if (/*hanpTarget*/ ctx[3] === undefined && !("hanpTarget" in props)) {
-    			console_1.warn("<App> was created without expected prop 'hanpTarget'");
-    		}
     	}
 
     	get title() {
@@ -489,22 +510,14 @@ var app = (function () {
     	set rbrnTarget(value) {
     		throw new Error("<App>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
-
-    	get hanpTarget() {
-    		throw new Error("<App>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
-    	}
-
-    	set hanpTarget(value) {
-    		throw new Error("<App>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
-    	}
     }
 
     const app = new App({
     	target: document.body,
     	props: {
     		title: 'partnerpixel',
-    		rbrnTarget: 'https://kdgif9n6ji.execute-api.eu-west-1.amazonaws.com/main',
-    		hanpTarget: 'https://g6z1iqwte3.execute-api.us-east-1.amazonaws.com/main'
+    		rbrnTarget: 'https://kdgif9n6ji.execute-api.eu-west-1.amazonaws.com/main'
+    		//hanpTarget: 'https://g6z1iqwte3.execute-api.us-east-1.amazonaws.com/main'
     	}
     });
 

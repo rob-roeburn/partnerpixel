@@ -4,13 +4,11 @@
 
 	export let title;
 	export let rbrnTarget;
-	export let hanpTarget;
 
 	function handleClick(req) {
 		let postdata={};
 		// The code below shows how to retrieve from a selected element in the page
 		postdata.Campaign=req.srcElement.classList[0];
-
 		// The code below shows how to retrieve from the query string
 		let queryString = req.path[5].location.href.split('?');
 		let qsElements = queryString[1].split('&');
@@ -39,6 +37,37 @@
 			payload: postdata
 		}));
 	}
+
+  function pageLoaded() {
+    console.log("Loaded")
+    console.log()
+    let postdata={};
+		// The code below shows how to retrieve from the query string
+		let queryString = window.location.href.split('?');
+		let qsElements = queryString[1].split('&');
+		for (let i = 0; i < qsElements.length; i++) {
+			let pair = qsElements[i].split('=');
+			postdata[decodeURIComponent(pair[0])]=decodeURIComponent(pair[1]);
+		}
+
+		// Print results to console ahead of XHR
+		console.log(postdata)
+
+		// Create XHR and open with API URL
+		let xhr = new XMLHttpRequest();
+		xhr.open("POST", rbrnTarget+'/processData', true);
+
+		// Execute XHR
+    xhr.send(JSON.stringify({
+			payload: postdata
+		}));
+  }
+
+  window.onload = pageLoaded()
+
+  document.addEventListener('DOMContentLoaded', function() {
+    //alert("Ready!");
+  }, false);
 
 </script>
 
