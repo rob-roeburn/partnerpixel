@@ -335,23 +335,23 @@ var app = (function () {
     			t4 = space();
     			div3 = element("div");
     			attr_dev(h1, "class", "svelte-1j2amf2");
-    			add_location(h1, file, 74, 1, 2059);
+    			add_location(h1, file, 74, 1, 2063);
     			attr_dev(div0, "class", "campaign1 svelte-1j2amf2");
     			attr_dev(div0, "id", "float");
-    			add_location(div0, file, 76, 2, 2099);
+    			add_location(div0, file, 76, 2, 2103);
     			attr_dev(div1, "class", "campaign2 svelte-1j2amf2");
     			attr_dev(div1, "id", "float");
-    			add_location(div1, file, 77, 2, 2165);
+    			add_location(div1, file, 77, 2, 2169);
     			attr_dev(div2, "class", "campaign3 svelte-1j2amf2");
     			attr_dev(div2, "id", "float");
-    			add_location(div2, file, 78, 2, 2231);
+    			add_location(div2, file, 78, 2, 2235);
     			attr_dev(div3, "class", "campaign4 svelte-1j2amf2");
     			attr_dev(div3, "id", "float");
-    			add_location(div3, file, 79, 2, 2297);
+    			add_location(div3, file, 79, 2, 2301);
     			attr_dev(div4, "class", "outer svelte-1j2amf2");
-    			add_location(div4, file, 75, 1, 2077);
+    			add_location(div4, file, 75, 1, 2081);
     			attr_dev(main, "class", "svelte-1j2amf2");
-    			add_location(main, file, 73, 0, 2051);
+    			add_location(main, file, 73, 0, 2055);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -421,8 +421,6 @@ var app = (function () {
     	}
 
     	function pageLoaded() {
-    		console.log(window.navigator);
-    		console.log(window.location);
     		let postdata = {};
 
     		try {

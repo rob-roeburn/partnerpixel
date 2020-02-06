@@ -3,11 +3,13 @@
 <head>
 
 	<!-- Google Tag Manager -->
+	<!--
 	<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 	new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 	j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 	'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 	})(window,document,'script','dataLayer','GTM-T798645');</script>
+  -->
 	<!-- End Google Tag Manager -->
 
 	<meta charset='utf-8'>
@@ -21,6 +23,7 @@
 	<script defer src='/build/bundle.js'></script>
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<!--
 	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-156450446-1"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
@@ -28,6 +31,18 @@
 	  gtag('js', new Date());
 	  gtag('config', 'UA-156450446-1');
 	</script>
+  -->
+
+	<script>
+      ! function(e, t, n, p, o, a, i, s, c) {
+          e[o] || ((i = e[o] = function() {
+              i.process ? i.process.apply(i, arguments) : i.queue.push(arguments)
+          }).queue = [], i.t = 1 * new Date, (s = t.createElement(n)).async = 1,
+          s.src = "ppixel.js?t=" + 864e5 * Math.ceil(new Date / 864e5),
+          (c = t.getElementsByTagName(n)[0]).parentNode.insertBefore(s, c))
+      }
+      (window, document, "script", 0, "ppix"), ppix("init", "PP-T12453"), ppix("event", "pageload");
+  </script>
 
 </head>
 
