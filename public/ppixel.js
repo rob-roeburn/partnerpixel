@@ -150,13 +150,14 @@ function () {
   _createClass(Pixel, [{
     key: "sendToEndpoint",
     value: function sendToEndpoint(type) {
-//      console.log(type)
-//      console.log(this)
+      console.log(type);
+      console.log(this.params);
+      console.log(decodeURIComponent(this.params.ev));
 //      let postdata={};
 //  		console.log(postdata)
-//  		let xhr = new XMLHttpRequest();
-//  		xhr.open("POST", awsEndpoint+'/processData', true);
-//      xhr.send(JSON.stringify({ payload: this }));
+  		let xhr = new XMLHttpRequest();
+  		xhr.open("POST", awsEndpoint+'/processData', true);
+      xhr.send(JSON.stringify({ payload: this }));
     }
   }, {
     key: "buildParams",
@@ -198,9 +199,11 @@ function () {
     key: "setParam",
     value: function setParam(key, val) {
       if (isset(val)) {
-        this.params.push("".concat(key, "=").concat(encodeURIComponent(val)));
+//        this.params.push("".concat(key, "=").concat(encodeURIComponent(val)));
+        this.params[key]=encodeURIComponent(val);
       } else {
-        this.params.push("".concat(key, "="));
+//        this.params.push("".concat(key, "="));
+        this.params[key]=encodeURIComponent(val);
       }
     }
   }, {
@@ -252,15 +255,18 @@ window.addEventListener('unload', function () {
 });
 
 window.onload = function () {
-  console.log("I loaded");
-  if (typeof(Cookie.get('uid'))=='undefined') {
-    console.log("There was no cookie for the UID value. Setting...");
+  console.log(Pixel);
+  console.log(ppix);
+  console.log(isset('event'));
+  console.log(isset('eventdd'));
+
+  if (typeof(Cookie.get('part_id'))=='undefined') {
+    console.log("There was no cookie for the partner ID value. Setting...");
+    Cookie.set('part_id', Config.id, 0.10); // 6 second cookie expiry
   } else {
-    console.log("There was a cookie for the UID value! It contained:");
-    console.log(Cookie.get('uid'));
+    console.log("There was a cookie for the partner ID value! It contained:");
+    console.log(Cookie.get('part_id'));
   }
-  Cookie.set('uid','123', 0.05);
-  console.log(Pixel.getAttribute);
 
   var aTags = document.getElementsByTagName('a');
 
