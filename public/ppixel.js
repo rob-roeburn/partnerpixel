@@ -120,7 +120,6 @@ var Cookie = {
   }
 };
 
-
 var Url = {
   getParameterByName: function getParameterByName(name, url) {
     if (!url) url = window.location.href;
@@ -136,28 +135,76 @@ var Url = {
   }
 };
 
+
+function uuidv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 var Pixel =
 function () {
   function Pixel(event, timestamp, type) {
+
     _classCallCheck(this, Pixel);
     this.params = [];
     this.event = event;
     this.timestamp = timestamp;
     this.buildParams();
-    this.sendToEndpoint(type);
+    this.processEvent(event);
+    this.urlParams = new URLSearchParams(window.location.search);
+    let cookie_id="";
+
+    if (typeof(Cookie.get('hap_sys'))=='undefined') {
+      let cookie_id=uuidv4();
+      Cookie.set('hap_sys', cookie_id, 2 * 365 * 24 * 60);
+      this.sendToEndpoint(event,type,cookie_id);
+    } else {
+      let cookie_id=Cookie.get('hap_sys');
+      this.sendToEndpoint(event,type,cookie_id);
+    }
   }
 
   _createClass(Pixel, [{
     key: "sendToEndpoint",
-    value: function sendToEndpoint(type) {
-      console.log(type);
-      console.log(this.params);
-      console.log(decodeURIComponent(this.params.ev));
-//      let postdata={};
-//  		console.log(postdata)
+    value: function sendToEndpoint(event,type,cookie_id) {
+
+      let hap_initial_origin=" ";
+      let hap_conv_origin=" ";
+
+      if(event=='pageload'){
+        if (typeof(Cookie.get('hap_initial_origin'))=='undefined') {
+          console.log("There was no cookie for the initial ETC value. Printing it but NOT setting it...");
+          let urlParams = new URLSearchParams(window.location.search);
+          hap_initial_origin=urlParams.get('origin');
+        } else {
+          console.log("There was a cookie for the initial ETC value! It contained:");
+          hap_initial_origin=Cookie.get('hap_initial_origin');
+        }
+      } else {
+        if (typeof(Cookie.get('hap_initial_origin'))=='undefined') {
+          console.log("There was no cookie for the initial ETC value. Printing it but NOT setting it...");
+          let urlParams = new URLSearchParams(window.location.search);
+          hap_initial_origin=urlParams.get('origin');
+        } else {
+          console.log("There was a cookie for the initial ETC value! It contained:");
+          hap_initial_origin=Cookie.get('hap_initial_origin');
+        }
+        hap_conv_origin=event.origin;
+      }
+
+
+      let postdata={};
+      postdata.type=type;
+      postdata.part_id=Config.id;      // Partner ID:
+      postdata.hap_origin_ini=hap_initial_origin;      // Check cookie contains an initial ETC, grab it and send
+      postdata.hap_origin_con=hap_conv_origin;      // Check cookie contains a conversion ETC, grab it and send
+      postdata.hap_sys=cookie_id;      // Check cookie contains a cookie UUID, grab it and send
+  		console.log(postdata)
   		let xhr = new XMLHttpRequest();
   		xhr.open("POST", awsEndpoint+'/processData', true);
-      xhr.send(JSON.stringify({ payload: this }));
+      xhr.send(JSON.stringify({ payload: postdata }));
     }
   }, {
     key: "buildParams",
@@ -168,6 +215,11 @@ function () {
           this.setParam(index, attr[index](index));
         }
       }
+    }
+  }, {
+    key: "processEvent",
+    value: function processEvent(eventData) {
+      Config.etc=eventData;
     }
   }, {
     key: "getAttribute",
@@ -199,10 +251,8 @@ function () {
     key: "setParam",
     value: function setParam(key, val) {
       if (isset(val)) {
-//        this.params.push("".concat(key, "=").concat(encodeURIComponent(val)));
         this.params[key]=encodeURIComponent(val);
       } else {
-//        this.params.push("".concat(key, "="));
         this.params[key]=encodeURIComponent(val);
       }
     }
@@ -216,16 +266,8 @@ function () {
   return Pixel;
 }();
 
-// update the cookie if it exists, if it doesn't, create a new one, lasting 2 years  Cookie.set('uid', Cookie.get('uid'), 2 * 365 * 24 * 60) :
-//Cookie.exists('uid') ?
-//Cookie.set('uid', Cookie.get('uid'), 2 * 365 * 24 * 60) :
-//Cookie.set('uid', guid()           , 2 * 365 * 24 * 60); // save any utms through as session cookies
-
-//Cookie.setUtms(); // process the queue and future incoming commands
-
 
 pixelFunc.process = function (method, value, type) {
-//  console.log("Event firing")
   if (method == 'init') {
     Config.id = value;
   } else if (method == 'event') {
@@ -255,17 +297,22 @@ window.addEventListener('unload', function () {
 });
 
 window.onload = function () {
-  console.log(Pixel);
-  console.log(ppix);
-  console.log(isset('event'));
-  console.log(isset('eventdd'));
 
   if (typeof(Cookie.get('part_id'))=='undefined') {
     console.log("There was no cookie for the partner ID value. Setting...");
-    Cookie.set('part_id', Config.id, 0.10); // 6 second cookie expiry
+    Cookie.set('part_id', Config.id, 1.00); // 1 minute cookie expiry
   } else {
     console.log("There was a cookie for the partner ID value! It contained:");
     console.log(Cookie.get('part_id'));
+  }
+
+  if (typeof(Cookie.get('hap_initial_origin'))=='undefined') {
+    console.log("There was no cookie for the initial ETC value. Setting...");
+    let urlParams = new URLSearchParams(window.location.search);
+    Cookie.set('hap_initial_origin', urlParams.get('origin'), 1.00); // 1 minute cookie expiry
+  } else {
+    console.log("There was a cookie for the initial ETC value! It contained:");
+    console.log(Cookie.get('hap_initial_origin'));
   }
 
   var aTags = document.getElementsByTagName('a');
