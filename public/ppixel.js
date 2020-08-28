@@ -35,8 +35,12 @@ function _typeof(obj) {
 
 var Config = {
   id: '',
-  version: versionNumber
+  version: versionNumber,
+  author: 'Rob PHI'
 };
+
+var awsEndpoint
+  = 'https://g6z1iqwte3.execute-api.us-east-1.amazonaws.com/main';
 
 var isset = function isset(variable) {
   return typeof variable !== 'undefined' && variable !== null && variable !== '';
@@ -45,9 +49,6 @@ var isset = function isset(variable) {
 var now = function now() {
   return 1 * new Date();
 };
-
-var awsEndpoint
-  = 'https://kdgif9n6ji.execute-api.eu-west-1.amazonaws.com/main';
 
 var Cookie = {
   prefix: function prefix() {
@@ -135,7 +136,6 @@ var Url = {
   }
 };
 
-
 function uuidv4() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
     var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -155,10 +155,9 @@ function () {
     this.processEvent(event);
     this.urlParams = new URLSearchParams(window.location.search);
     let cookie_id="";
-
     if (typeof(Cookie.get('hap_sys'))=='undefined') {
       let cookie_id=uuidv4();
-      Cookie.set('hap_sys', cookie_id, 2 * 365 * 24 * 60);
+      Cookie.set('hap_sys', cookie_id, 60*24*365*2); // 2-year cookie expiry
       this.sendToEndpoint(event,type,cookie_id);
     } else {
       let cookie_id=Cookie.get('hap_sys');
@@ -170,41 +169,116 @@ function () {
     key: "sendToEndpoint",
     value: function sendToEndpoint(event,type,cookie_id) {
 
-      let hap_initial_origin=" ";
-      let hap_conv_origin=" ";
+      let hap_initial_origin, hap_conv_origin, pagename, action, paramname1, paramvalue1, paramname2, paramvalue2, paramname3, paramvalue3=" ";
 
       if(event=='pageload'){
-        if (typeof(Cookie.get('hap_initial_origin'))=='undefined') {
-          console.log("There was no cookie for the initial ETC value. Printing it but NOT setting it...");
+        if (typeof(Cookie.get('hap_initial_origin'))=='undefined' || Cookie.get('hap_initial_origin')=='null' ) {
+          //console.log("There was no cookie for the initial ETC value. Printing it and setting it to hap_initial_origin...");
           let urlParams = new URLSearchParams(window.location.search);
           hap_initial_origin=urlParams.get('origin');
         } else {
-          console.log("There was a cookie for the initial ETC value! It contained:");
+          //console.log("There was a cookie for the initial ETC value! It contained:");
           hap_initial_origin=Cookie.get('hap_initial_origin');
         }
+        hap_conv_origin=" ";
+        pagename=" ";
+        action=" ";
+        paramname1=" ";
+        paramvalue1=" ";
+        paramname2=" ";
+        paramvalue2=" ";
+        paramname3=" ";
+        paramvalue3=" ";
       } else {
         if (typeof(Cookie.get('hap_initial_origin'))=='undefined') {
-          console.log("There was no cookie for the initial ETC value. Printing it but NOT setting it...");
+          //console.log("There was no cookie for the initial ETC value. Printing it but NOT setting it...");
           let urlParams = new URLSearchParams(window.location.search);
           hap_initial_origin=urlParams.get('origin');
         } else {
-          console.log("There was a cookie for the initial ETC value! It contained:");
+          //console.log("There was a cookie for the initial ETC value! It contained:");
           hap_initial_origin=Cookie.get('hap_initial_origin');
         }
-        hap_conv_origin=event.origin;
+        if (typeof(event)=='string') {
+          if (event.toUpperCase()=='ADD_TO_CART') {
+            pagename=event.PageName;
+            action="Add to Cart Simple Action";
+            paramname1="Cart ParamName1";
+          }
+          if (event.toUpperCase()=='COMPLETE_REGISTRATION') {
+            pagename=event.PageName;
+            action="Complete Registration Simple Action";
+          }
+          if (event.toUpperCase()=='LEAD') {
+            pagename=event.PageName;
+            action="Lead Simple Action";
+          }
+          if (event.toUpperCase()=='PURCHASE') {
+            pagename=event.PageName;
+            action="Purchase Simple Action";
+          }
+          if (event.toUpperCase()=='SCHEDULE') {
+            pagename=event.PageName;
+            action="Schedule Simple Action";
+          }
+          if (event.toUpperCase()=='SUBSCRIBE') {
+            pagename=event.PageName;
+            action="Subscribe Simple Action";
+          }
+          if (event.toUpperCase()=='VIEW_CONTENT') {
+            pagename=event.PageName;
+            action="View content Simple Action";
+          }
+        } else if(typeof(event)=='object') {
+          if (event.Action != null) {
+            action=event.Action
+          } else if (event.CustomEvent != null) {
+            action=event.CustomEvent
+          }
+          hap_conv_origin=event.hap_origin_con;
+          pagename=event.PageName;
+          paramname1=event.ParamName1;
+          paramvalue1=event.ParamValue1;
+          paramname2=event.ParamName2;
+          paramvalue2=event.ParamValue2;
+          paramname3=event.ParamName3;
+          paramvalue3=event.ParamValue3;
+        }
       }
-
-
       let postdata={};
       postdata.type=type;
-      postdata.part_id=Config.id;      // Partner ID:
-      postdata.hap_origin_ini=hap_initial_origin;      // Check cookie contains an initial ETC, grab it and send
-      postdata.hap_origin_con=hap_conv_origin;      // Check cookie contains a conversion ETC, grab it and send
-      postdata.hap_sys=cookie_id;      // Check cookie contains a cookie UUID, grab it and send
-  		console.log(postdata)
-  		let xhr = new XMLHttpRequest();
-  		xhr.open("POST", awsEndpoint+'/processData', true);
-      xhr.send(JSON.stringify({ payload: postdata }));
+      postdata.part_id=Config.id;                 // Partner ID:
+      postdata.hap_origin_ini=hap_initial_origin; // Check cookie contains an initial ETC, grab it and send
+      postdata.hap_origin_con=hap_conv_origin;    // Check cookie contains a conversion ETC, grab it and send
+      postdata.hap_sys=cookie_id;                 // Check cookie contains a cookie UUID, grab it and send
+      postdata.PageName=pagename;
+      postdata.Action=action;
+      postdata.ParamName1=paramname1;
+      postdata.ParamValue1=paramvalue1;
+      postdata.ParamName2=paramname2;
+      postdata.ParamValue2=paramvalue2;
+      postdata.ParamName3=paramname3;
+      postdata.ParamValue3=paramvalue3;
+      let pprex = /dar_pregnancy/g;
+      let bprex = /dar_baby/g;
+      if (postdata.hap_origin_ini==null || typeof(postdata.hap_origin_ini)=='undefined') {
+        postdata.hap_origin_ini=''
+      }
+      if (postdata.hap_origin_con==null || typeof(postdata.hap_origin_con)=='undefined') {
+        postdata.hap_origin_con=''
+      }
+      if (postdata.PageName==(null||' ') || typeof(postdata.PageName)=='undefined') {
+        postdata.PageName=window.location.origin+window.location.pathname
+      }
+      if (
+        postdata.hap_origin_ini.match(pprex) ||
+        postdata.hap_origin_con.match(pprex) ||
+        postdata.hap_origin_ini.match(bprex) ||
+        postdata.hap_origin_con.match(bprex)
+      ) {
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", awsEndpoint+'/ppix', true);
+        xhr.send(JSON.stringify({ payload: postdata }));
+      }
     }
   }, {
     key: "buildParams",
@@ -226,25 +300,25 @@ function () {
     value: function getAttribute() {
       var _this = this;
       return {
-        id:           function id()              { return Config.id;                                        }, // partner ID
-        uid:          function uid()             { return 'uid_placeholder';                                }, // user Id
-        ev:           function ev()              { return JSON.stringify(_this.event);                      }, // event being triggered
-        ty:           function ty()              { return _this.type;                                       }, // event type
-        v:            function v()               { return Config.version;                                   }, // openpixel.js version
-        dl:           function dl()              { return window.location.href;                             }, // document location
-        rl:           function rl()              { return document.referrer;                                }, // referrer location
-        ts:           function ts()              { return _this.timestamp;                                  }, // timestamp when event was triggered
-        de:           function de()              { return document.characterSet;                            }, // document encoding
-        sr:           function sr()              { return window.screen.width + 'x' + window.screen.height; }, // screen resolution
-        vp:           function vp()              { return window.innerWidth + 'x' + window.innerHeight;     }, // viewport size
-        cd:           function cd()              { return window.screen.colorDepth;                         }, // color depth
-        dt:           function dt()              { return document.title;                                   }, // document title
-        tz:           function tz()              { return new Date().getTimezoneOffset();                   }, // timezone
-        utm_source:   function utm_source(key)   { return 'utm_source';                                     }, // get the utm source
-        utm_medium:   function utm_medium(key)   { return 'utm_medium';                                     }, // get the utm medium
-        utm_term:     function utm_term(key)     { return 'utm_term';                                       }, // get the utm term
-        utm_content:  function utm_content(key)  { return 'utm_content';                                    }, // get the utm content
-        utm_campaign: function utm_campaign(key) { return 'utm_campaign';                                   }  // get the utm campaign
+        id:           function id()              { return Config.id;                                        },  // partner ID
+        uid:          function uid()             { return 'uid_placeholder';                                },  // user Id
+        ev:           function ev()              { return JSON.stringify(_this.event);                      },  // event being triggered
+        ty:           function ty()              { return _this.type;                                       },  // event type
+        v:            function v()               { return Config.version;                                   },  // openpixel.js version
+        dl:           function dl()              { return window.location.href;                             },  // document location
+        rl:           function rl()              { return document.referrer;                                },  // referrer location
+        ts:           function ts()              { return _this.timestamp;                                  },  // timestamp when event was triggered
+        de:           function de()              { return document.characterSet;                            },  // document encoding
+        sr:           function sr()              { return window.screen.width + 'x' + window.screen.height; },  // screen resolution
+        vp:           function vp()              { return window.innerWidth + 'x' + window.innerHeight;     },  // viewport size
+        cd:           function cd()              { return window.screen.colorDepth;                         },  // color depth
+        dt:           function dt()              { return document.title;                                   },  // document title
+        tz:           function tz()              { return new Date().getTimezoneOffset();                   },  // timezone
+        utm_source:   function utm_source(key)   { return 'utm_source';                                     },  // get the utm source
+        utm_medium:   function utm_medium(key)   { return 'utm_medium';                                     },  // get the utm medium
+        utm_term:     function utm_term(key)     { return 'utm_term';                                       },  // get the utm term
+        utm_content:  function utm_content(key)  { return 'utm_content';                                    },  // get the utm content
+        utm_campaign: function utm_campaign(key) { return 'utm_campaign';                                   }   // get the utm campaign
       };
     }
   }, {
@@ -299,20 +373,20 @@ window.addEventListener('unload', function () {
 window.onload = function () {
 
   if (typeof(Cookie.get('part_id'))=='undefined') {
-    console.log("There was no cookie for the partner ID value. Setting...");
-    Cookie.set('part_id', Config.id, 1.00); // 1 minute cookie expiry
+    //console.log("There was no cookie for the partner ID value. Setting...");
+    Cookie.set('part_id', Config.id, 60*24*365*2); // 2-year cookie expiry
   } else {
-    console.log("There was a cookie for the partner ID value! It contained:");
-    console.log(Cookie.get('part_id'));
+    //console.log("There was a cookie for the partner ID value! It contained:");
+    //console.log(Cookie.get('part_id'));
   }
 
-  if (typeof(Cookie.get('hap_initial_origin'))=='undefined') {
-    console.log("There was no cookie for the initial ETC value. Setting...");
+  if (typeof(Cookie.get('hap_initial_origin'))=='undefined' || Cookie.get('hap_initial_origin')=='null' ) {
+    //console.log("There was no cookie for the initial ETC value. Setting...");
     let urlParams = new URLSearchParams(window.location.search);
-    Cookie.set('hap_initial_origin', urlParams.get('origin'), 1.00); // 1 minute cookie expiry
+    Cookie.set('hap_initial_origin', urlParams.get('origin'), 60*24*365*2); // 2-year cookie expiry
   } else {
-    console.log("There was a cookie for the initial ETC value! It contained:");
-    console.log(Cookie.get('hap_initial_origin'));
+    //console.log("There was a cookie for the initial ETC value! It contained:");
+    //console.log(Cookie.get('hap_initial_origin'));
   }
 
   var aTags = document.getElementsByTagName('a');
