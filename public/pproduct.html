@@ -32,7 +32,12 @@
 	<div class='outer'>
     <div><h1>CONVERSION PAGE</h1></div>
     <div id='campaign1' class='float' onClick=ppix('event','Purchase'),alert('If_the_following_matches_dar_baby/pregnancy*:[___'+thisETC+',____]the_API_surface_will_be_hit.')><h2>Simple Event: Convert</h2></div>
- 	</div>
+    <h2>Cookie ID:<div id='cookieref'></div></h2>
+	</div>
 </body>
+
+<script>
+  setTimeout(function() { document.getElementById('cookieref').innerHTML = document.cookie.split(";")[0].split("=")[1] }, 250);
+</script>
 
 </html>
