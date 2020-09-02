@@ -16,6 +16,9 @@
     "svelte": "^3.0.0"
   },
   "dependencies": {
-    "sirv-cli": "^0.4.4"
+    "sirv-cli": "^0.4.4",
+    "serialize-javascript": ">=3.1.0",
+    "acorn": ">=7.1.1",
+    "kind-of": ">=6.0.3"
   }
 }
