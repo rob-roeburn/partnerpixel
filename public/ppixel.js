@@ -202,7 +202,6 @@ function () {
           if (event.toUpperCase()=='ADD_TO_CART') {
             pagename=event.PageName;
             action="Add to Cart Simple Action";
-            paramname1="Cart ParamName1";
           }
           if (event.toUpperCase()=='COMPLETE_REGISTRATION') {
             pagename=event.PageName;
