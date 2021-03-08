@@ -136,6 +136,7 @@ var Url = {
   }
 };
 
+
 function uuidv4() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
     var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -155,6 +156,7 @@ function () {
     this.processEvent(event);
     this.urlParams = new URLSearchParams(window.location.search);
     let cookie_id="";
+
     if (typeof(Cookie.get('hap_sys'))=='undefined') {
       let cookie_id=uuidv4();
       Cookie.set('hap_sys', cookie_id, 60*24*365*2); // 2-year cookie expiry
@@ -169,7 +171,7 @@ function () {
     key: "sendToEndpoint",
     value: function sendToEndpoint(event,type,cookie_id) {
 
-      let hap_initial_origin, hap_conv_origin, pagename, action, paramname1, paramvalue1, paramname2, paramvalue2, paramname3, paramvalue3=" ";
+      let hap_initial_origin, hap_conv_origin, action, paramname1, paramvalue1, paramname2, paramvalue2, paramname3, paramvalue3, utm_source, pagename=" ";
 
       if(event=='pageload'){
         if (typeof(Cookie.get('hap_initial_origin'))=='undefined' || Cookie.get('hap_initial_origin')=='null' ) {
@@ -179,6 +181,12 @@ function () {
         } else {
           //console.log("There was a cookie for the initial ETC value! It contained:");
           hap_initial_origin=Cookie.get('hap_initial_origin');
+        }
+        if (typeof(Cookie.get('ppix_utm_source'))=='undefined' || Cookie.get('ppix_utm_source')=='null' ) {
+          let urlParams = new URLSearchParams(window.location.search);
+          utm_source=urlParams.get('utm_source');
+        } else {
+          utm_source=Cookie.get('ppix_utm_source');
         }
         hap_conv_origin=" ";
         pagename=" ";
@@ -198,34 +206,42 @@ function () {
           //console.log("There was a cookie for the initial ETC value! It contained:");
           hap_initial_origin=Cookie.get('hap_initial_origin');
         }
+        if (typeof(Cookie.get('ppix_utm_source'))=='undefined' || Cookie.get('ppix_utm_source')=='null' ) {
+          let urlParams = new URLSearchParams(window.location.search);
+          if (urlParams.get('utm_source') != null) {
+            utm_source=urlParams.get('utm_source');
+          }
+        } else {
+          utm_source=Cookie.get('ppix_utm_source');
+        }
         if (typeof(event)=='string') {
           if (event.toUpperCase()=='ADD_TO_CART') {
             pagename=event.PageName;
-            action="Add to Cart Simple Action";
+            action="Add to Cart";
           }
           if (event.toUpperCase()=='COMPLETE_REGISTRATION') {
             pagename=event.PageName;
-            action="Complete Registration Simple Action";
+            action="Complete Registration";
           }
           if (event.toUpperCase()=='LEAD') {
             pagename=event.PageName;
-            action="Lead Simple Action";
+            action="Lead";
           }
           if (event.toUpperCase()=='PURCHASE') {
             pagename=event.PageName;
-            action="Purchase Simple Action";
+            action="Purchase";
           }
           if (event.toUpperCase()=='SCHEDULE') {
             pagename=event.PageName;
-            action="Schedule Simple Action";
+            action="Schedule";
           }
           if (event.toUpperCase()=='SUBSCRIBE') {
             pagename=event.PageName;
-            action="Subscribe Simple Action";
+            action="Subscribe";
           }
           if (event.toUpperCase()=='VIEW_CONTENT') {
             pagename=event.PageName;
-            action="View content Simple Action";
+            action="View content";
           }
         } else if(typeof(event)=='object') {
           if (event.Action != null) {
@@ -241,8 +257,10 @@ function () {
           paramvalue2=event.ParamValue2;
           paramname3=event.ParamName3;
           paramvalue3=event.ParamValue3;
+          
         }
       }
+
       let postdata={};
       postdata.type=type;
       postdata.part_id=Config.id;                 // Partner ID:
@@ -259,6 +277,8 @@ function () {
       postdata.ParamValue3=paramvalue3;
       let pprex = /dar_pregnancy/g;
       let bprex = /dar_baby/g;
+      let philprex = /philips/g;
+      let avenprex = /avent/g;
       if (postdata.hap_origin_ini==null || typeof(postdata.hap_origin_ini)=='undefined') {
         postdata.hap_origin_ini=''
       }
@@ -266,7 +286,17 @@ function () {
         postdata.hap_origin_con=''
       }
       if (postdata.PageName==(null||' ') || typeof(postdata.PageName)=='undefined') {
-        postdata.PageName=window.location.origin+window.location.pathname
+        postdata.PageName=window.location.href
+      }
+      if (utm_source != null) {
+        if (
+          utm_source.match(philprex) ||
+          utm_source.match(avenprex)
+        ) {
+          let xhr = new XMLHttpRequest();
+          xhr.open("POST", awsEndpoint+'/ppix', true);
+          xhr.send(JSON.stringify({ payload: postdata }));
+        }
       }
       if (
         postdata.hap_origin_ini.match(pprex) ||
@@ -388,6 +418,11 @@ window.onload = function () {
     //console.log(Cookie.get('hap_initial_origin'));
   }
 
+  if (typeof(Cookie.get('ppix_utm_source'))=='undefined' || Cookie.get('ppix_utm_source')=='null' ) {
+    //console.log("There was no cookie for the initial ETC value. Setting...");
+    let urlParams = new URLSearchParams(window.location.search);
+    Cookie.set('ppix_utm_source', urlParams.get('utm_source'), 60*24*365*2); // 2-year cookie expiry
+  }
   var aTags = document.getElementsByTagName('a');
 
   for (var i = 0, l = aTags.length; i < l; i++) {
