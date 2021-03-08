@@ -31,10 +31,10 @@
 <body>
   <div class='outer'>
     <div><h1>CONVERSION PAGE</h1></div>
-    <div id='campaign1' class='float' onClick=ppix('event','Purchase')><h2>Simple Event: Convert</h2></div>
-    <div id='campaign2' class='float' onClick=ppix('event','Lead')><h2>Simple Event: Lead</h2></div>
-    <div id='campaign3' class='float' onClick=ppix('event','Subscribe')><h2>Simple Event: Subscribe</h2></div>
-    <div id='campaign4' class='float' onClick=ppix('event',{CustomEvent:'Custom_Conversion',hap_origin_con:'Conversion_ETC',ParamName1:'SomeName1',ParamValue1:'SomeValue1',ParamName2:'SomeName2',ParamValue2:'SomeValue2',ParamName3:'SomeName3',ParamValue3:'SomeValue3'})><h2>Custom Event with Conv</h2></div>
+    <div id='campaign1' class='float' onClick=ppix('event','Purchase'),alert('Cookie_status:[___'+document.cookie+',____]\nDependent_on_status,_the_API_surface_will_be_hit.')><h2>Simple Event: Convert</h2></div>
+    <div id='campaign2' class='float' onClick=ppix('event','Lead'),alert('Cookie_status:[___'+document.cookie+',____]\nDependent_on_status,_the_API_surface_will_be_hit.')><h2>Simple Event: Lead</h2></div>
+    <div id='campaign3' class='float' onClick=ppix('event','Subscribe'),alert('Cookie_status:[___'+document.cookie+',____]\nDependent_on_status,_the_API_surface_will_be_hit.')><h2>Simple Event: Subscribe</h2></div>
+    <div id='campaign4' class='float' onClick=ppix('event',{CustomEvent:'Custom_Conversion',hap_origin_con:'Conversion_ETC',ParamName1:'SomeName1',ParamValue1:'SomeValue1',ParamName2:'SomeName2',ParamValue2:'SomeValue2',ParamName3:'SomeName3',ParamValue3:'SomeValue3'}),alert('Cookie_status:[___'+document.cookie+',____]\nDependent_on_status,_the_API_surface_will_be_hit.')><h2>Custom Event with Conv</h2></div>
     <h2>Cookie ID:<div id='cookieref'></div></h2>
    </div>
 </body>
